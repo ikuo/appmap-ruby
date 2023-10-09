@@ -204,7 +204,7 @@ module AppMap
             # a stack overflow in the defined hook method.
             next if %w[Marshal AppMap ActiveSupport].member?((hook_cls&.name || '').split('::')[0])
 
-            next if method_id == :call
+            next if !is_local(location) and method_id == :call
 
             next if self.class.already_hooked?(method)
 
@@ -241,6 +241,11 @@ module AppMap
           end
         end
       end
+    end
+
+    def is_local(location)
+      path = location.delete_prefix(Dir.pwd + '/')
+      path.start_with?('app') || path.start_with?('lib')
     end
   end
 end
