@@ -35,6 +35,8 @@ lambda do
   }
 
   TracePoint.new(:class) do |tp|
+    # Workaround DeprecationError in Rails 7.0 when accessing `.name`
+    next if defined?(ActiveSupport::TimeWithZone) && (tp.self == ActiveSupport::TimeWithZone)
     cls_name = tp.self.name
     initializers = INITIALIZERS.delete(cls_name)
     if initializers
